@@ -5,9 +5,9 @@
 
 <!-- badges:start -->
 
-[![CI](https://github.com/HatemIsmailShalaby1979/L-D-Command-Center/actions/workflows/Quality/badge.svg)](https://github.com/HatemIsmailShalaby1979/L-D-Command-Center/actions)
+[![CI](https://github.com/<YOUR_GITHUB_ORG>/L-D-Command-Center/actions/workflows/Quality/badge.svg)](https://github.com/<YOUR_GITHUB_ORG>/L-D-Command-Center/actions)
 ![licence](https://img.shields.io/badge/licence-MIT-blue)
-[![last commit](https://img.shields.io/github/last-commit/HatemIsmailShalaby1979/L-D-Command-Center)](https://github.com/HatemIsmailShalaby1979/L-D-Command-Center/commits/main)
+[![last commit](https://img.shields.io/github/last-commit/<YOUR_GITHUB_ORG>/L-D-Command-Center)](https://github.com/<YOUR_GITHUB_ORG>/L-D-Command-Center/commits/main)
 ![status](https://img.shields.io/badge/ci-success-brightgreen?label=success%20(2026-10-05))
 
 *Measured 2026-10-06 — CI **success**; head `23f4cc3` (2026-10-05); Python.*
@@ -97,11 +97,11 @@ Requires Python 3.10+, LM Studio at `http://localhost:1234/v1` with a model load
 
 ## Related work
 
-- [Full portfolio](https://github.com/HatemIsmailShalaby1979/HatemIsmailShalaby1979) — how this project fits the wider work
+- [Full portfolio](https://github.com/<YOUR_GITHUB_ORG>/<YOUR_GITHUB_ORG>) — how this project fits the wider work
 
 ## Author
 
-Built by Hatem Ismail Shalaby, Contact Centre Operations & AI Implementation Lead | WFM & CX Transformation. Background: https://github.com/HatemIsmailShalaby1979
+Built by Hatem Shalaby, Contact Centre Operations & AI Implementation Lead | WFM & CX Transformation. Background: https://github.com/<YOUR_GITHUB_ORG>
 
 ## Licence
 

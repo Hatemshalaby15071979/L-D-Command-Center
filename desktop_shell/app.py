@@ -398,7 +398,7 @@ def run() -> None:  # pragma: no cover â€” needs a display
             "All limits removed â€” enjoy unlimited generation.")
 
     def _open_upgrade_page():
-        _open_path("https://github.com/HatemIsmailShalaby1979/"
+        _open_path("https://github.com/<YOUR_GITHUB_ORG>/"
                    "L-D-Command-Center#pricing")
 
     # -- tabs ---------------------------------------------------------------

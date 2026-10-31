@@ -365,7 +365,7 @@ _FINISH_BAR = (
 # ---------------------------------------------------------------------------
 
 APP_NAME = "L&D Command Center"
-APP_URL = "https://github.com/HatemIsmailShalaby1979/L-D-Command-Center"
+APP_URL = "https://github.com/<YOUR_GITHUB_ORG>/L-D-Command-Center"
 
 _FOOTER = """\
 <footer class="ldcc-footer">
