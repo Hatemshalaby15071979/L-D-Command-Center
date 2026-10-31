@@ -185,7 +185,7 @@ decided by the time P4 completes.
 | D4 | Primary packaging target OS | **RESOLVED 2026-08-24: Windows + Linux together** — both installers built and offline-verified in P5.4; adds Linux rehearsal to the packaging task | P5.4 unblocked |
 | D5 | v1 scope = all four pillars as built (Learning, Language Lab, Career core), Playground deferred? | **RESOLVED 2026-08-24: All built pillars ship in v1** once Phases 0–4 correct them; Playground/Notion post-v1 | whole plan |
 
-Repo-local git identity was set during init (`thommyshelby` / `thommyshelby@local`) because no global identity existed — owner may replace it before any push.
+Repo-local git identity was set during init (`Hatem Shalaby` / `hatem.shalaby@users.noreply.github.com`) because no global identity existed — owner may replace it before any push.
 
 ---
 
