@@ -8,12 +8,9 @@
 # BREAKS IF DELETED: Audio generation capability is lost; export-engine and
 #       language-lab can't produce audio output.
 #
-# Backend selection strategy (P2.1):
-#   - Auto-select picks ONLY among implemented backends: Piper is the
-#     true default until Kokoro is implemented (KOKORO_IMPLEMENTED in
-#     model-layer/tts.py gates this), fixing the old default path that
-#     always crashed on Kokoro's NotImplementedError.
-#   - An explicit backend override is honored as-is — the caller owns it.
+# Backend: Piper is the sole implemented TTS engine. narration auto-selects
+#   Piper for every language; an explicit backend override (Piper) is honored
+#   as-is — the caller owns it.
 #
 # Audio output:
 #   - WAV is written first (lossless, preserves all TTS output)
@@ -28,7 +25,7 @@ from pathlib import Path
 from typing import Optional
 
 from engines.audio_engine import assembly, voice_catalog
-from model_layer.tts import KOKORO_IMPLEMENTED, TtsBackend
+from model_layer.tts import TtsBackend
 
 
 # ---------------------------------------------------------------------------
@@ -36,10 +33,6 @@ from model_layer.tts import KOKORO_IMPLEMENTED, TtsBackend
 # keep the historical module names importable for callers and tests.
 # ---------------------------------------------------------------------------
 
-DEFAULT_VOICES = voice_catalog.KOKORO_LANGUAGE_VOICES
-KOKORO_SUPPORTED_LANGUAGES = set(voice_catalog.KOKORO_LANGUAGE_VOICES) | {
-    "english", "spanish", "french", "german",
-}
 DEFAULT_PIPER_VOICE = voice_catalog.PIPER_LANGUAGE_VOICES["en"]
 DEFAULT_SAMPLE_RATE = assembly.DEFAULT_SAMPLE_RATE
 
@@ -110,30 +103,20 @@ def _detect_language(text: str) -> str:
 
 def _select_backend(text: str, backend: Optional[TtsBackend] = None) -> tuple[TtsBackend, str]:
     """
-    Select the appropriate TTS backend and voice based on language.
+    Select the TTS backend and voice. Piper is the sole implemented engine,
+    so every path resolves to Piper; an explicit override is still honored.
 
     Args:
         text: Input text to narrate.
-        backend: Optional explicit backend override.
+        backend: Optional explicit backend override (must be Piper).
 
     Returns:
         Tuple of (backend, voice) to use.
     """
-    if backend:
-        # User explicitly specified backend
-        if backend == TtsBackend.KOKORO:
-            lang = _detect_language(text)
-            voice = DEFAULT_VOICES.get(lang, "af_heart")
-            return backend, voice
-        else:
-            return backend, DEFAULT_PIPER_VOICE
-
-    # Auto-select: prefer Kokoro for supported languages ONLY when the
-    # backend is actually implemented; otherwise Piper carries everything.
-    if KOKORO_IMPLEMENTED:
-        lang = _detect_language(text)
-        if lang in KOKORO_SUPPORTED_LANGUAGES:
-            return TtsBackend.KOKORO, DEFAULT_VOICES.get(lang, "af_heart")
+    # Piper is the only implemented backend; honor a Piper override, otherwise
+    # fall back to the Piper default voice. Any non-Piper value is ignored.
+    if backend is not None and backend != TtsBackend.PIPER:
+        logger.warning("narration: only the Piper backend is implemented; ignoring %r", backend)
     return TtsBackend.PIPER, DEFAULT_PIPER_VOICE
 
 
@@ -164,8 +147,8 @@ def narrate(
     Args:
         text: The text to synthesize (can be a Journey card, Resume summary,
               or any arbitrary text).
-        backend: Optional explicit backend override (TtsBackend.PIPER or
-                 TtsBackend.KOKORO). If None, auto-selects based on language.
+        backend: Optional explicit backend override (TtsBackend.PIPER).
+                 If None, narration uses Piper.
         voice: Optional explicit voice override. If None, uses the default
                voice for the selected backend and language.
         output_path: Optional directory path to save audio files. If provided,

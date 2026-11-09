@@ -26,7 +26,6 @@ from model_layer.tts import (
     get_available_voices,
     generate_audio,
     _synthesize_piper,
-    _synthesize_kokoro,
 )
 
 
@@ -66,8 +65,8 @@ class TestTtsConfig:
         assert config.speed == 1.0
 
     def test_custom_backend(self):
-        config = TtsConfig(backend=TtsBackend.KOKORO)
-        assert config.backend == TtsBackend.KOKORO
+        config = TtsConfig(backend=TtsBackend.PIPER)
+        assert config.backend == TtsBackend.PIPER
 
 
 # ---------------------------------------------------------------------------
@@ -178,33 +177,6 @@ class TestSynthesizePiperImpl:
 
 
 # ---------------------------------------------------------------------------
-# Test _synthesize_kokoro()
-# ---------------------------------------------------------------------------
-
-class TestSynthesizeKokoro:
-    """Tests for the Kokoro backend implementation."""
-
-    def test_kokoro_not_implemented(self, tmp_path):
-        """Kokoro backend raises NotImplementedError (placeholder)."""
-        # Mock the imports and path.exists to reach the NotImplementedError
-        with patch("model_layer.tts.Path.exists", return_value=True):
-            with patch.dict("sys.modules", {"torch": MagicMock(), "onnxruntime": MagicMock()}):
-                # Reload the module to pick up mocked imports
-                import importlib
-                import model_layer.tts as tts_module
-                importlib.reload(tts_module)
-
-                with pytest.raises(NotImplementedError, match="Kokoro-82M backend requires additional setup"):
-                    tts_module._synthesize_kokoro(
-                        SAMPLE_TEXT,
-                        SAMPLE_VOICE,
-                        SAMPLE_LANGUAGE,
-                        tmp_path,
-                        SAMPLE_SPEED,
-                    )
-
-
-# ---------------------------------------------------------------------------
 # Test get_available_voices()
 # ---------------------------------------------------------------------------
 
@@ -238,21 +210,6 @@ class TestGetAvailableVoices:
         assert "en_US-lessac-medium" in voices
         assert "es_MX-diana-medium" in voices
         assert "invalid_voice" not in voices  # Missing config
-
-    def test_discovers_kokoro_voices(self, tmp_path):
-        """Discovers Kokoro voices from kokoro-*.onnx files."""
-        voice_dir = tmp_path / "kokoro"
-        voice_dir.mkdir()
-
-        # Create mock Kokoro voice files
-        (voice_dir / "kokoro-af-heart.onnx").write_bytes(b"mock")
-        (voice_dir / "kokoro-bf-emma.onnx").write_bytes(b"mock")
-
-        voices = get_available_voices(backend=TtsBackend.KOKORO, models_dir=voice_dir)
-        assert len(voices) == 2
-        assert "af-heart" in voices
-        assert "bf-emma" in voices
-
 
 # ---------------------------------------------------------------------------
 # Test generate_audio()
@@ -295,14 +252,9 @@ class TestTtsBackend:
     def test_piper_value(self):
         assert TtsBackend.PIPER.value == "piper"
 
-    def test_kokoro_value(self):
-        assert TtsBackend.KOKORO.value == "kokoro"
-
-    def test_iteration(self):
+    def test_single_backend(self):
         backends = list(TtsBackend)
-        assert len(backends) == 2
-        assert TtsBackend.PIPER in backends
-        assert TtsBackend.KOKORO in backends
+        assert backends == [TtsBackend.PIPER]
 
 
 # ---------------------------------------------------------------------------

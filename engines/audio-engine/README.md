@@ -6,7 +6,7 @@ The audio-engine generates audio content from text — audiobooks and podcasts i
 
 - `voice_catalog.py` — the one (language, role) → voice table; all consumers resolve voices here.
 - `assembly.py` — the public seam: `render_segments(segments) -> AudioResult` owns synthesis, silence, WAV concat, and MP3 conversion.
-- `narration.py` — plain text → single-voice audio (Narration), auto-selecting backends via `KOKORO_IMPLEMENTED`.
+- `narration.py` — plain text → single-voice audio (Narration), using the Piper backend.
 - `podcast_audio.py` — PodcastScript → multi-voice audio; speaker→voice mapping via the catalog.
 - `provisioning.py` — offline voice setup (see below).
 - `podcast_script.py` — PodcastScript generation via the Generation Pipeline.

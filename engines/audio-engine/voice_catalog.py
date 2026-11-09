@@ -1,12 +1,11 @@
 # engines/audio-engine/voice_catalog.py
 #
 # WHAT: The Voice Catalog — the one table mapping (language, role) to a
-#       concrete TTS voice, per backend.
-# WHY:  Before P2.3 voice knowledge lived in four places with two disjoint
-#       vocabularies (Kokoro ids in narration, Piper names in
-#       podcast_audio/bilingual). CONTEXT.md: Narration and podcast
-#       rendering resolve voices ONLY through this module, so adding a
-#       language or swapping a voice is a one-table change.
+#       concrete Piper TTS voice.
+# WHY:  Before P2.3 voice knowledge lived in four places with disjoint
+#       vocabularies. CONTEXT.md: Narration and podcast rendering resolve
+#       voices ONLY through this module, so adding a language or swapping a
+#       voice is a one-table change. Piper is the sole implemented backend.
 # BREAKS IF DELETED: Voice tables scatter back across engines; a missing
 #       language silently degrades to English in three places instead of
 #       one, and provisioning checks (P2.5) lose their source of truth.
@@ -16,7 +15,7 @@ from __future__ import annotations
 import logging
 from typing import Optional
 
-from model_layer.tts import KOKORO_IMPLEMENTED, TtsBackend
+from model_layer.tts import TtsBackend
 
 logger = logging.getLogger(__name__)
 
@@ -83,21 +82,8 @@ def language_name(code: str) -> str:
     return LANGUAGE_NAMES.get((code or "").lower()[:2], code)
 
 # ---------------------------------------------------------------------------
-# Kokoro catalog (future backend — resolved only when implemented)
+# Language resolution
 # ---------------------------------------------------------------------------
-
-KOKORO_LANGUAGE_VOICES: dict[str, str] = {
-    "en": "af_heart",
-    "es": "bf_emma",
-    "fr": "bf_emma",
-    "de": "bm_george",
-    "it": "bf_emma",
-    "pt": "bf_emma",
-    "ru": "bm_george",
-    "ja": "bf_heart",
-    "zh": "bf_emma",
-}
-
 
 def _resolve_language(language: Optional[str], table: dict[str, str], role: str) -> str:
     lang = (language or FALLBACK_LANGUAGE).lower()[:2]
@@ -114,14 +100,8 @@ def _resolve_language(language: Optional[str], table: dict[str, str], role: str)
 
 def narrator_voice(
     language: str = FALLBACK_LANGUAGE,
-    backend: Optional[TtsBackend] = None,
 ) -> str:
-    """Single-voice narration: (language, backend) -> voice id."""
-    resolved_backend = backend or (
-        TtsBackend.KOKORO if KOKORO_IMPLEMENTED else TtsBackend.PIPER
-    )
-    if resolved_backend == TtsBackend.KOKORO:
-        return _resolve_language(language, KOKORO_LANGUAGE_VOICES, "kokoro narrator")
+    """Single-voice narration: language -> Piper voice id."""
     return _resolve_language(language, PIPER_LANGUAGE_VOICES, "piper narrator")
 
 
@@ -156,11 +136,9 @@ def speaker_voices(count: int, language: str = FALLBACK_LANGUAGE) -> list[str]:
     return voices
 
 
-def has_language(language: str, backend: Optional[TtsBackend] = None) -> bool:
-    """Provisioning check: does a concrete voice exist for this language?"""
+def has_language(language: str) -> bool:
+    """Provisioning check: does a concrete Piper voice exist for this language?"""
     lang = (language or FALLBACK_LANGUAGE).lower()[:2]
-    if backend == TtsBackend.KOKORO:
-        return lang in KOKORO_LANGUAGE_VOICES
     return lang in PIPER_LANGUAGE_VOICES
 
 

@@ -23,8 +23,6 @@ from engines.audio_engine.narration import (
     _detect_language,
     _select_backend,
     _wav_to_mp3,
-    KOKORO_SUPPORTED_LANGUAGES,
-    DEFAULT_VOICES,
     DEFAULT_PIPER_VOICE,
     TtsBackend,
 )
@@ -100,7 +98,7 @@ class TestDetectLanguage:
 class TestSelectBackend:
     """Tests for backend selection logic."""
 
-    def test_auto_selects_piper_while_kokoro_unimplemented(self):
+    def test_auto_selects_piper(self):
         # P2.1 contract: Piper is the true default until Kokoro exists.
         backend, voice = _select_backend(SAMPLE_TEXT_EN)
         assert backend == TtsBackend.PIPER
@@ -110,13 +108,6 @@ class TestSelectBackend:
         from engines.audio_engine.narration import _select_backend as sel
         backend, _voice = sel(SAMPLE_TEXT_ES)
         assert backend == TtsBackend.PIPER
-
-    @patch("engines.audio_engine.narration.KOKORO_IMPLEMENTED", True)
-    def test_auto_prefers_kokoro_once_implemented(self):
-        # When the flag flips, supported languages go back to Kokoro.
-        backend, voice = _select_backend(SAMPLE_TEXT_EN)
-        assert backend == TtsBackend.KOKORO
-        assert isinstance(voice, str) and voice
 
     def test_fallback_to_piper_for_unsupported_language(self):
         # Test explicit Piper backend selection (the fallback path)
@@ -128,11 +119,6 @@ class TestSelectBackend:
         backend, voice = _select_backend(SAMPLE_TEXT_EN, backend=TtsBackend.PIPER)
         assert backend == TtsBackend.PIPER
         assert voice == DEFAULT_PIPER_VOICE
-
-    def test_explicit_kokoro_backend(self):
-        backend, voice = _select_backend(SAMPLE_TEXT_EN, backend=TtsBackend.KOKORO)
-        assert backend == TtsBackend.KOKORO
-        assert voice in DEFAULT_VOICES.values()
 
 
 # ---------------------------------------------------------------------------
@@ -301,15 +287,6 @@ class TestWavToMp3:
 
 class TestConstants:
     """Tests for module constants."""
-
-    def test_kokoro_supported_languages(self):
-        assert "en" in KOKORO_SUPPORTED_LANGUAGES
-        assert "es" in KOKORO_SUPPORTED_LANGUAGES
-        assert "fr" in KOKORO_SUPPORTED_LANGUAGES
-
-    def test_default_voices(self):
-        assert "af_heart" in DEFAULT_VOICES.values()
-        assert "bm_george" in DEFAULT_VOICES.values()
 
     def test_default_piper_voice(self):
         assert DEFAULT_PIPER_VOICE == "en_US-lessac-medium"

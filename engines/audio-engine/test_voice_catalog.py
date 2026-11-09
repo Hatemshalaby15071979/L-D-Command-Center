@@ -17,7 +17,6 @@ import pytest
 
 from engines.audio_engine.voice_catalog import (
     FALLBACK_LANGUAGE,
-    KOKORO_LANGUAGE_VOICES,
     PIPER_LANGUAGE_VOICES,
     PIPER_SPEAKER_POOL,
     has_language,
@@ -42,14 +41,6 @@ class TestNarratorVoice:
             voice = narrator_voice("xx")
         assert voice == PIPER_LANGUAGE_VOICES[FALLBACK_LANGUAGE]
         assert "falling back" in caplog.text
-
-    def test_explicit_kokoro_backend_routes_to_kokoro_table(self):
-        assert narrator_voice("en", backend=TtsBackend.KOKORO) == "af_heart"
-
-    def test_auto_backend_is_piper_while_kokoro_unimplemented(self):
-        from model_layer.tts import KOKORO_IMPLEMENTED
-        if not KOKORO_IMPLEMENTED:
-            assert narrator_voice("en") == PIPER_LANGUAGE_VOICES["en"]
 
 
 class TestPairVoices:

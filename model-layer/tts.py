@@ -1,8 +1,8 @@
 # model-layer/tts.py
 #
-# WHAT: Text-to-speech client with multiple backends — Piper (default) and
-#       Kokoro-82M (optional). Backend-agnostic interface: synthesize(text,
-#       voice, language) -> audio bytes.
+# WHAT: Text-to-speech client for the Piper backend — the supported,
+#       offline-first TTS engine (CPU-only, ONNX runtime). Backend-agnostic
+#       interface: synthesize(text, voice, language) -> audio bytes.
 # WHY:  Provide a local, offline-first TTS capability at the model-layer tier
 #       (same as LM Studio client), without depending on cloud services.
 # BREAKS IF DELETED: Audio generation across export-engine, audio-engine, and
@@ -12,8 +12,7 @@
 #   - Piper (rhasspy/piper): MIT license for software; voice models are
 #     individually licensed (many under Creative Commons or permissive
 #     distribution). See https://github.com/rhasspy/piper
-#   - Kokoro-82M (hexgrad/Kokoro): MIT license per the upstream repo.
-#     Both backends are CPU-only capable.
+#   Piper is CPU-only capable (ONNX runtime).
 
 from __future__ import annotations
 
@@ -31,17 +30,11 @@ from typing import Optional
 
 class TtsBackend(str, Enum):
     PIPER = "piper"
-    KOKORO = "kokoro"
 
 
 DEFAULT_BACKEND = TtsBackend.PIPER
 DEFAULT_VOICE = "en_US-lessac-medium"  # Piper's default English voice
 DEFAULT_LANGUAGE = "en"
-
-# Single source of truth for Kokoro readiness. Flip to True only when
-# _synthesize_kokoro gains a real tokenizer/phoneme encoder; until then
-# every consumer (narration auto-select) must treat Kokoro as unavailable.
-KOKORO_IMPLEMENTED = False
 
 
 # ---------------------------------------------------------------------------
@@ -105,70 +98,6 @@ def _synthesize_piper(
     return wav_buffer.getvalue()
 
 
-def _synthesize_kokoro(
-    text: str,
-    voice: str,
-    language: str,
-    models_dir: Path,
-    speed: float,
-) -> bytes:
-    """
-    Synthesize audio using the Kokoro-82M backend.
-
-    Kokoro-82M is a fixed-language TTS model. The voice parameter maps to a
-    Kokoro voice ID (e.g., 'af_heart', 'af_bella', 'am_adam').
-
-    Returns: WAV audio bytes (24000 Hz mono for Kokoro).
-    """
-    if not KOKORO_IMPLEMENTED:
-        raise NotImplementedError(
-            "Kokoro-82M backend requires additional setup (tokenizer, phoneme encoder).\n"
-            "Use the Piper backend for now, or implement full Kokoro integration."
-        )
-    try:
-        import torch
-        import onnxruntime as ort
-    except ImportError as e:
-        raise RuntimeError(
-            "Required packages not installed for Kokoro backend.\n"
-            "Run: pip install torch onnxruntime"
-        ) from e
-
-    # Kokoro voice IDs — map from voice param to model file
-    voice_to_model = {
-        "af_heart": "kokoro-af-heart.onnx",
-        "af_bella": "kokoro-af-bella.onnx",
-        "am_adam": "kokoro-am-adam.onnx",
-        "am_michael": "kokoro-am-michael.onnx",
-        "bf_emma": "kokoro-bf-emma.onnx",
-        "bm_george": "kokoro-bm-george.onnx",
-    }
-
-    model_name = voice_to_model.get(voice, "kokoro-af-heart.onnx")
-    model_path = models_dir / model_name
-
-    if not model_path.exists():
-        raise FileNotFoundError(
-            f"Kokoro voice model not found: {model_path}\n"
-            f"Download from https://huggingface.co/Hexgrad/Kokoro-82M"
-        )
-
-    # Load ONNX model
-    session = ort.InferenceSession(str(model_path), providers=["CPUExecutionProvider"])
-
-    # Tokenize and synthesize (simplified — real Kokoro uses a tokenizer)
-    # For this implementation, we use the onnxruntime session directly
-    # The actual tokenization would depend on the Kokoro model's requirements
-
-    # Note: This is a placeholder for the Kokoro backend. A full implementation
-    # would require the Kokoro tokenizer and phoneme encoder.
-    # For now, we raise NotImplementedError and defer to Piper for production use.
-    raise NotImplementedError(
-        "Kokoro-82M backend requires additional setup (tokenizer, phoneme encoder).\n"
-        "Use the Piper backend for now, or implement full Kokoro integration."
-    )
-
-
 # ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
@@ -210,13 +139,10 @@ def synthesize(
     backend = backend or DEFAULT_BACKEND
     models_dir = models_dir or TtsConfig().models_dir
 
-    # Dispatch to backend
+    # Dispatch to backend. Piper is the sole implemented engine.
     if backend == TtsBackend.PIPER:
         return _synthesize_piper(text, voice, language, models_dir, speed)
-    elif backend == TtsBackend.KOKORO:
-        return _synthesize_kokoro(text, voice, language, models_dir, speed)
-    else:
-        raise ValueError(f"Unknown TTS backend: {backend}")
+    raise ValueError(f"Unknown TTS backend: {backend}")
 
 
 def get_available_voices(backend: Optional[TtsBackend] = None, models_dir: Optional[Path] = None) -> list[str]:
@@ -245,13 +171,6 @@ def get_available_voices(backend: Optional[TtsBackend] = None, models_dir: Optio
             config_file = model_file.parent / f"{voice_name}.onnx.json"
             if config_file.exists():
                 voices.add(voice_name)
-        return sorted(voices)
-
-    elif backend == TtsBackend.KOKORO:
-        # Kokoro uses .onnx files with specific naming
-        voices = []
-        for model_file in models_dir.glob("kokoro-*.onnx"):
-            voices.append(model_file.stem.replace("kokoro-", ""))
         return sorted(voices)
 
     return []
