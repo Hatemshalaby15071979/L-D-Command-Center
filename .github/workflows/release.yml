@@ -39,16 +39,45 @@ jobs:
       - name: PyInstaller build (windowed)
         run: python -m PyInstaller desktop_shell\ldcc.spec --noconfirm --distpath dist --workpath build\release_work
 
+      # Must run BEFORE the manifest: signing rewrites the PE, so a hash
+      # computed earlier would not match the shipped binary.
+      - name: Sign executable
+        shell: pwsh
+        env:
+          LDCC_SIGN_PFX_BASE64: ${{ secrets.LDCC_SIGN_PFX_BASE64 }}
+          LDCC_SIGN_PFX_PASSWORD: ${{ secrets.LDCC_SIGN_PFX_PASSWORD }}
+        run: |
+          & ./desktop_shell/sign_build.ps1 -ExePath dist/ldcc.exe
+          $code = $LASTEXITCODE
+          if ($code -eq 3) {
+            Write-Host "::warning::No signing certificate configured - publishing an UNSIGNED release."
+            exit 0
+          }
+          exit $code
+
       - name: Write build manifest
         run: python desktop_shell\write_build_manifest.py dist\ldcc.exe
 
       - name: Windowed-launch smoke gate
         run: powershell -NoProfile -ExecutionPolicy Bypass -File desktop_shell\verify_build.ps1 -ExePath dist\ldcc.exe
 
+      - name: Read signing status
+        id: sign
+        shell: pwsh
+        run: |
+          $record = Get-Content dist/ldcc-signature.json -Raw | ConvertFrom-Json
+          "status=$($record.status)" >> $env:GITHUB_OUTPUT
+          if ($record.status -eq "signed") {
+            "note=Signed by $($record.subject)." >> $env:GITHUB_OUTPUT
+          } else {
+            "note=This build is UNSIGNED. Windows will show 'Unknown publisher' - verify the SHA-256 against ldcc-build.json before running." >> $env:GITHUB_OUTPUT
+          }
+
       - name: Create GitHub Release
         shell: powershell
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SIGN_NOTE: ${{ steps.sign.outputs.note }}
         run: |
           $tag = "v$((Get-Date -Format 'yyyyMMdd-HHmmss'))"
-          gh release create $tag "dist/ldcc.exe" "dist/ldcc-build.json" "dist/ldcc-build.txt" --title "ldcc $tag" --notes "Windows desktop release built by the gated pipeline. Verify sha256 against dist/ldcc-build.json in the release assets."
+          gh release create $tag "dist/ldcc.exe" "dist/ldcc-build.json" "dist/ldcc-build.txt" "dist/ldcc-signature.json" --title "ldcc $tag" --notes "$env:SIGN_NOTE`n`nVerify sha256 against dist/ldcc-build.json in the release assets."

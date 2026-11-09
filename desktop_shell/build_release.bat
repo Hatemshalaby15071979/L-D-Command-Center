@@ -9,8 +9,9 @@ rem    [1] OFFLINE SUITE  run_checks baseline (pytest, live deselected)
 rem    [2] POLICY GATE    check_deployment_policy.py (no secrets/voices bundled)
 rem    [3] ARCHIVE        previous dist\ldcc.exe -> dist\archive\ldcc-<ts>.exe
 rem    [4] BUILD          PyInstaller desktop_shell\ldcc.spec (windowed)
-rem    [5] MANIFEST       write_build_manifest.py -> dist\ldcc-build.json
-rem    [6] SMOKE GATE     verify_build.ps1 launches exe, asserts window renders
+rem    [5] SIGN           sign_build.ps1 (Authenticode; skipped without a cert)
+rem    [6] MANIFEST       write_build_manifest.py -> dist\ldcc-build.json
+rem    [7] SMOKE GATE     verify_build.ps1 launches exe, asserts window renders
 rem
 rem  A failing stage stops the pipeline (nothing ships broken) and leaves the
 rem  previous release intact in dist\archive for rollback_release.bat.
@@ -57,7 +58,7 @@ echo =========================================================================
 
 if "%GATE%"=="1" (
   echo.
-  echo == [1/6] offline suite gate ==
+  echo == [1/7] offline suite gate ==
   "%PY%" -m pytest -q
   if errorlevel 1 (
     echo RELEASE FAIL: offline suite not green - fix before shipping.
@@ -65,12 +66,12 @@ if "%GATE%"=="1" (
   )
 ) else (
   echo.
-  echo == [1/6] offline suite gate -- SKIPPED, --no-gate given ==
+  echo == [1/7] offline suite gate -- SKIPPED, --no-gate given ==
 )
 
 if "%POLICY%"=="1" (
   echo.
-  echo == [2/6] secrets/artifacts policy gate ==
+  echo == [2/7] secrets/artifacts policy gate ==
   "%PY%" desktop_shell\check_deployment_policy.py
   if errorlevel 1 (
     echo RELEASE FAIL: policy violation - nothing may bundle secrets or voices.
@@ -78,11 +79,11 @@ if "%POLICY%"=="1" (
   )
 ) else (
   echo.
-  echo == [2/6] policy gate -- SKIPPED, --no-policy given ==
+  echo == [2/7] policy gate -- SKIPPED, --no-policy given ==
 )
 
 echo.
-echo == [3/6] archive previous artifact ==
+echo == [3/7] archive previous artifact ==
 if not exist "dist" mkdir "dist"
 if not exist "dist\archive" mkdir "dist\archive"
 for /f "delims=" %%T in ('powershell -NoProfile -Command "Get-Date -Format yyyyMMdd-HHmmss"') do set "TS=%%T"
@@ -94,7 +95,7 @@ if exist "dist\ldcc.exe" (
 )
 
 echo.
-echo == [4/6] PyInstaller build (windowed) ==
+echo == [4/7] PyInstaller build (windowed) ==
 "%PY%" -m PyInstaller desktop_shell\ldcc.spec --noconfirm --distpath dist --workpath build\release_work
 if errorlevel 1 (
   echo RELEASE FAIL: PyInstaller build failed - previous build still in dist\archive.
@@ -102,7 +103,21 @@ if errorlevel 1 (
 )
 
 echo.
-echo == [5/6] write build manifest ==
+echo == [5/7] sign executable ==
+rem Exit 3 means "no certificate configured" - an unsigned build, not a failure.
+powershell -NoProfile -ExecutionPolicy Bypass -File desktop_shell\sign_build.ps1 -ExePath "dist\ldcc.exe"
+if errorlevel 3 (
+  echo   no signing certificate configured - this build is UNSIGNED
+) else (
+  if errorlevel 1 (
+    echo RELEASE FAIL: Authenticode signing failed.
+    exit /b 1
+  )
+  echo   signed and verified - see dist\ldcc-signature.json
+)
+
+echo.
+echo == [6/7] write build manifest ==
 "%PY%" desktop_shell\write_build_manifest.py "dist\ldcc.exe"
 if errorlevel 1 (
   echo RELEASE FAIL: manifest write failed.
@@ -111,7 +126,7 @@ if errorlevel 1 (
 
 if "%VERIFY%"=="1" (
   echo.
-  echo == [6/6] windowed-launch smoke gate ==
+  echo == [7/7] windowed-launch smoke gate ==
   powershell -NoProfile -ExecutionPolicy Bypass -File desktop_shell\verify_build.ps1 -ExePath "dist\ldcc.exe"
   if errorlevel 1 (
     echo RELEASE FAIL: smoke gate failed - artifact did not render; roll back with rollback_release.bat.
@@ -119,11 +134,12 @@ if "%VERIFY%"=="1" (
   )
 ) else (
   echo.
-  echo == [6/6] smoke gate -- SKIPPED, --no-verify given; launch dist\ldcc.exe manually ==
+  echo == [7/7] smoke gate -- SKIPPED, --no-verify given; launch dist\ldcc.exe manually ==
 )
 
 echo.
 echo =========================================================================
 echo  RELEASE OK: dist\ldcc.exe built, verified, manifest at dist\ldcc-build.json
+echo              signing record at dist\ldcc-signature.json
 echo =========================================================================
 endlocal

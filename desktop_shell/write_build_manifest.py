@@ -57,6 +57,28 @@ def _git_commit() -> str:
     return "no-git-tree"
 
 
+def _signature(dist: Path) -> dict[str, str | None]:
+    """Summarise dist/ldcc-signature.json written by sign_build.ps1.
+
+    This runs after signing, so the record reflects the bytes that are about
+    to be shipped. A missing record means the build predates the signing
+    stage; it is reported, not invented.
+    """
+    path = dist / "ldcc-signature.json"
+    if not path.is_file():
+        return {"status": "unknown"}
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        return {"status": "unreadable", "error": str(exc)}
+    return {
+        "status": data.get("status", "unknown"),
+        "subject": data.get("subject"),
+        "thumbprint": data.get("thumbprint"),
+        "signed_utc": data.get("signedUtc"),
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("exe", type=Path, help="path to the built dist exe")
@@ -89,6 +111,7 @@ def main(argv: list[str] | None = None) -> int:
         "spec": str(SPEC),
         "spec_sha256": spec_digest,
         "upstream_commit": _git_commit(),
+        "signature": _signature(dist),
     }
 
     json_path = dist / f"{args.name}-build.json"
@@ -97,7 +120,8 @@ def main(argv: list[str] | None = None) -> int:
     txt_path.write_text(
         "{artifact} {sha256_short} {bytes}B built {built_utc} "
         "{tools[python]} pyinstaller={tools[pyinstaller]} "
-        "spec={spec_sha256} upstream={upstream_commit}\n".format_map(record),
+        "spec={spec_sha256} upstream={upstream_commit} "
+        "signed={signature[status]}\n".format_map(record),
         encoding="utf-8",
     )
 
@@ -106,6 +130,7 @@ def main(argv: list[str] | None = None) -> int:
     print(f"  size={record['bytes']} bytes")
     print(f"  python={versions['python']} pyinstaller={versions['pyinstaller']}")
     print(f"  spec={record['spec_sha256']} upstream={record['upstream_commit']}")
+    print(f"  signed={record['signature']['status']}")
     return 0
 
 

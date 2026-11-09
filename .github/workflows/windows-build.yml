@@ -42,6 +42,23 @@ jobs:
       - name: PyInstaller build (windowed)
         run: python -m PyInstaller desktop_shell\ldcc.spec --noconfirm --distpath dist --workpath build\release_work
 
+      # Must run BEFORE the manifest: signing rewrites the PE, so a hash
+      # computed earlier would not match the shipped binary.
+      # Exits 3 when no certificate is configured; that is a pass, not a failure.
+      - name: Sign executable
+        shell: pwsh
+        env:
+          LDCC_SIGN_PFX_BASE64: ${{ secrets.LDCC_SIGN_PFX_BASE64 }}
+          LDCC_SIGN_PFX_PASSWORD: ${{ secrets.LDCC_SIGN_PFX_PASSWORD }}
+        run: |
+          & ./desktop_shell/sign_build.ps1 -ExePath dist/ldcc.exe
+          $code = $LASTEXITCODE
+          if ($code -eq 3) {
+            Write-Host "::notice::No signing certificate configured - this build ships unsigned."
+            exit 0
+          }
+          exit $code
+
       - name: Write build manifest
         run: python desktop_shell\write_build_manifest.py dist\ldcc.exe
 
@@ -56,5 +73,6 @@ jobs:
             dist/ldcc.exe
             dist/ldcc-build.json
             dist/ldcc-build.txt
+            dist/ldcc-signature.json
           if-no-files-found: error
           retention-days: 60

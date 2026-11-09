@@ -54,7 +54,7 @@ technically independent.
 
 ## Architecture
 
-- `desktop_shell/app.py` — the PyWebView shell entry point.
+- `desktop_shell/app.py` — the Tkinter shell entry point.
 - `model-layer/quality_guard.py` — the quality guard and humor/tips layer.
 - Section modules — Language Lab, Career, Playground, Audio, Journey, each with its own frozen/unfrozen state.
 - `dist/archive` — the rollback target for the policy gate.
@@ -94,6 +94,31 @@ python -c "import sys; sys.path.insert(0, r'E:\LD_Command_Center'); import deskt
 
 Requires Python 3.10+, LM Studio at `http://localhost:1234/v1` with a model loaded
 (e.g. `google/gemma-4-12b-qat`), and `tkinter` + `httpx` to boot cleanly.
+
+## Releases and code signing
+
+Windows builds are produced by `.github/workflows/windows-build.yml` and
+published by `.github/workflows/release.yml`. Every build emits three records
+next to the binary:
+
+| File | Contents |
+|---|---|
+| `ldcc-build.json` | SHA-256, size, build time, Python/PyInstaller versions, upstream commit, signing status |
+| `ldcc-build.txt` | the same as one line |
+| `ldcc-signature.json` | Authenticode status, signer subject, thumbprint, certificate expiry |
+
+The signing stage is implemented and wired; it activates when
+`LDCC_SIGN_PFX_BASE64` and `LDCC_SIGN_PFX_PASSWORD` are present in the
+repository secrets. Without them the build ships unsigned and says so in the
+release notes. See [`docs/CODE_SIGNING.md`](docs/CODE_SIGNING.md) for what to
+buy, how to add the secrets, and the Azure Artifact Signing alternative.
+
+Verify a download before running it:
+
+```powershell
+Get-FileHash .\ldcc.exe -Algorithm SHA256
+# compare against the sha256 field in ldcc-build.json
+```
 
 ## Related work
 
