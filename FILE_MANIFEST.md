@@ -139,7 +139,7 @@ Every file in this workspace and its one-line reason for existing. See `CONSTITU
 
 | Path | Reason |
 |------|--------|
-| `/model-layer/tts.py` | Text-to-speech client with Piper (default, CPU-only) and Kokoro-82M (optional) backends; backend-agnostic `synthesize(text, voice, language) -> audio bytes` interface |
+| `/model-layer/tts.py` | Text-to-speech client for the Piper backend (CPU-only, ONNX runtime); backend-agnostic `synthesize(text, voice, language) -> audio bytes` interface |
 | `/model-layer/test_tts.py` | 25 tests covering config, error handling, backend dispatch, voice discovery, and audio generation |
 
 ## Audio-Engine Implementation
@@ -147,13 +147,13 @@ Every file in this workspace and its one-line reason for existing. See `CONSTITU
 | Path | Reason |
 |------|--------|
 | `/engines/audio-engine/__init__.py` | Package init for audio-engine |
-| `/engines/audio-engine/narration.py` | Text narration function — auto-selects Kokoro for supported languages, falls back to Piper; outputs WAV + MP3 via ffmpeg |
+| `/engines/audio-engine/narration.py` | Text narration function — uses the Piper backend; outputs WAV + MP3 via ffmpeg |
 | `/engines/audio-engine/test_narration.py` | 33 tests: language detection, backend selection, error handling, Journey card/Resume summary narration, MP3 conversion |
 | `/engines/audio-engine/podcast_script.py` | Podcast script generation — topic/Journey → structured script with schema validation, length-compliance word budget (TARGET_SPEAKING_WPM/MIN_CONTENT_WPM/make_length_validator), and retry logic |
 | `/engines/audio-engine/test_podcast_script.py` | ~40 tests: dataclass validation, schema validation, length validator (word budget floor), generation, retry logic, error cases, convenience functions |
 | `/engines/audio-engine/podcast_audio.py` | Podcast audio renderer — maps each speaker to a distinct Piper voice, synthesizes and concatenates segments with brief pauses; outputs WAV (+ optional MP3 via ffmpeg) |
 | `/engines/audio-engine/assembly.py` | Public audio assembly seam — render_segments(speech|silence) -> AudioResult; owns WAV parse/silence/concat/MP3 so no engine imports another's privates |
-| `/engines/audio-engine/voice_catalog.py` | Voice Catalog — single (language, role) -> voice table (Piper + future Kokoro); English fallback warns |
+| `/engines/audio-engine/voice_catalog.py` | Voice Catalog — single (language, role) -> Piper voice table; English fallback warns |
 | `/engines/audio-engine/provisioning.py` | Offline voice provisioning — catalog id -> HF URLs, missing-voices report, downloader |
 | `/engines/audio-engine/test_podcast_audio.py` | 22 tests: silence/WAV generation, speaker→voice mapping, segment synthesis, duration calculation, error handling, MP3 toggle |
 | `/engines/language-lab/bilingual.py` | Bilingual lesson generation — topic+target/known language → BilingualPair with schema validation and retry; renders to audio using audio-engine TTS with alternating target/translation voices |

@@ -5,6 +5,8 @@
 Shared task queue for multi-agent coordination. Status values: OPEN, CLAIMED:<agent>, DONE:<agent>, BLOCKED:<reason>.
 See `BOOT_ROOT.md` — Multi-Agent Coordination Protocol.
 
+> **Correction (2026-11-09):** The `Kokoro-82M` TTS backend referenced in earlier `DONE` lines was **never implemented** — it was a placeholder stub that always raised `NotImplementedError`. It has been **removed**; `Piper` is the sole, supported, offline-first TTS engine. See `CHANGELOG.md`.
+
 DONE:opencode: model-layer client for LM Studio's local API with schema-validated responses and retry-on-failure
 DONE:opencode: podcast/audiobook length compliance — word-budget prompt + make_length_validator (MIN_CONTENT_WPM×tolerance floor bound to requested minutes) + controller stretch re-render (≤0.70×, if actual <92% of target) + audiobook duration excludes 44-byte WAV header; +8 tests; suite 1058 passed / 7 deselected; also fixed TestGenerateJourneyFlow pollution of generate_journey (monkeypatch.setattr)
 DONE:opencode: length compliance follow-up — live e2e (granite4.2: 1m request → 143s actual, LENGTH_OK) + immersion stretch re-render matching controller (+2 immersion tests); historical short podcasts on disk are pre-fix
@@ -14,7 +16,7 @@ DONE:claude-code: export-engine plain-text and PDF output from a journey
 
 DONE:claude-code: career-engine resume schema and generation with model-layer retry pattern
 DONE:claude-code: wire Resume objects into export-engine (PDF + DOCX support), add career-engine integration test covering generate→enhance→export→GitHub→LinkedIn→YouTube (all mocked)
-DONE:claude-code: add TTS client to model-layer with Piper (default) and Kokoro-82M (optional) backends, backend-agnostic synthesize() interface
+DONE:claude-code: add TTS client to model-layer with Piper (default) and Kokoro-82M (optional) backends, backend-agnostic synthesize() interface — *(Kokoro was a non-functional placeholder; removed 2026-11-09; Piper is the sole engine)*
 
 --- Production plan queue (IDs are canonical — see /docs/PRODUCTION_PLAN.md; review report: /tmp/architecture-review-20260824-094204.html) ---
 
@@ -29,7 +31,7 @@ DONE:opencode: P1.3 journey-core generate_journey migrated onto Pipeline (public
 DONE:opencode: P1.4 career-engine generate()/enhance() on Pipeline; Enhancement changes list survives retries (envelope validated per-attempt); validator now schema-driven via _validate_object — dead contact required-check gone (defects #4/#6 closed)
 DONE:opencode: P1.5 migrate podcast_script + bilingual generation onto Pipeline; both broken _call_model copies DELETED (defect #1 closed); their suites inject scripted clients through the public seam; live-guard tests in export-integration now use the real error taxonomy
 DONE:opencode: P1.6 YouTube summarization on Pipeline; templates registered; validate_video_summary + feedback retry replace best-effort parsing (malformed/empty now raise SchemaValidationError after retries)
-DONE:opencode: P2.1 KOKORO_IMPLEMENTED gate in tts.py; narration auto-select defaults to Piper until Kokoro exists (defect #2 closed); explicit overrides honored; flag-flip test keeps future behavior covered
+DONE:opencode: P2.1 KOKORO_IMPLEMENTED gate in tts.py; narration auto-select defaults to Piper until Kokoro exists (defect #2 closed); explicit overrides honored; flag-flip test keeps future behavior covered — *(Kokoro was never implemented; removed 2026-11-09)*
 DONE:opencode: P2.2 WAV check fixed to [8:12]; real-shaped-WAV regression test added (defect #3 closed)
 DONE:opencode: P2.3 Voice Catalog module (engines/audio-engine/voice_catalog.py): narrator/pair/speaker resolution + has_language provisioning check; 16 tests consolidating narration/podcast/bilingual voice tables into one (language, role) → voice map
 DONE:opencode: P2.4 assembly.py render_segments seam live; narration/podcast/bilingual consume it + Voice Catalog; cross-engine private imports eliminated render_segments([(text, voice, speed)]) → AudioResult; migrate all four audio consumers; language-lab stops importing underscore-privates
