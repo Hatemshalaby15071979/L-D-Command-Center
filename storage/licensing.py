@@ -97,7 +97,7 @@ PRO_ONLY_FEATURES = {
     "campaign_mode": CAMPAIGN,
 }
 
-UPGRADE_URL = "https://github.com/<YOUR_GITHUB_ORG>/L-D-Command-Center#pricing"
+UPGRADE_URL = "https://github.com/Hatemshalaby15071979/L-D-Command-Center#pricing"
 
 
 # --------------------------------------------------------------------------
