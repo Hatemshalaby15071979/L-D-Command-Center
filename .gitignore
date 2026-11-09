@@ -63,3 +63,6 @@ storage/data/
 
 # Downloaded model weights (never commit)
 models/
+
+# Local agent scratch — never published
+.workbuddy-ai/

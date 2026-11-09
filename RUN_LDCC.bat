@@ -1,6 +1,6 @@
 @echo off
 setlocal
-cd /d "E:\LD_Command_Center"
+cd /d "%~dp0"
 
 rem ---------------------------------------------------------------------------
 rem L&D Command Center launcher
@@ -46,7 +46,7 @@ if not defined PY (
 )
 
 echo Starting L^&D Command Center with %PY%
-"%PY%" -c "import sys; sys.path.insert(0, r'E:\LD_Command_Center'); import desktop_shell.app as app; app.run()"
+"%PY%" -c "import sys, os; sys.path.insert(0, os.getcwd()); import desktop_shell.app as app; app.run()"
 
 if errorlevel 1 (
   echo.

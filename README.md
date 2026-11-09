@@ -88,8 +88,8 @@ RUN_LDCC.bat
 or from cmd.exe:
 
 ```cmd
-cd /d E:\LD_Command_Center
-python -c "import sys; sys.path.insert(0, r'E:\LD_Command_Center'); import desktop_shell.app as app; app.run()"
+cd /d <path-to-this-repo>
+python -c "import sys, os; sys.path.insert(0, os.getcwd()); import desktop_shell.app as app; app.run()"
 ```
 
 Requires Python 3.10+, LM Studio at `http://localhost:1234/v1` with a model loaded
