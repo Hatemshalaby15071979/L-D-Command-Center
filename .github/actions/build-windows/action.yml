@@ -7,6 +7,17 @@ description: >-
   produced dist/ is visible to the caller's post-steps (artifact upload /
   GitHub Release creation).
 
+# Composite actions cannot reference the `secrets` context directly (the
+# loader rejects it). Signing secrets are passed in as inputs by the caller,
+# which is allowed to read `secrets.*` in its `with:` block.
+inputs:
+  sign_pfx_base64:
+    description: "Base64-encoded Authenticode PFX (optional; unsigned build if empty)."
+    required: false
+  sign_pfx_password:
+    description: "PFX password (optional)."
+    required: false
+
 runs:
   using: composite
   steps:
@@ -47,8 +58,8 @@ runs:
     - name: Sign executable
       shell: pwsh
       env:
-        LDCC_SIGN_PFX_BASE64: ${{ secrets.LDCC_SIGN_PFX_BASE64 }}
-        LDCC_SIGN_PFX_PASSWORD: ${{ secrets.LDCC_SIGN_PFX_PASSWORD }}
+        LDCC_SIGN_PFX_BASE64: ${{ inputs.sign_pfx_base64 }}
+        LDCC_SIGN_PFX_PASSWORD: ${{ inputs.sign_pfx_password }}
       run: |
         & ./desktop_shell/sign_build.ps1 -ExePath dist/ldcc.exe
         $code = $LASTEXITCODE

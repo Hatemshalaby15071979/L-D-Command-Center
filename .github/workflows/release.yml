@@ -17,6 +17,9 @@ jobs:
 
       - name: Build, sign, manifest, smoke (shared)
         uses: ./.github/actions/build-windows
+        with:
+          sign_pfx_base64: ${{ secrets.LDCC_SIGN_PFX_BASE64 }}
+          sign_pfx_password: ${{ secrets.LDCC_SIGN_PFX_PASSWORD }}
 
       - name: Read signing status
         id: sign
