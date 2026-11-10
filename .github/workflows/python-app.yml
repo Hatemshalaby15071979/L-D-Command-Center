@@ -30,8 +30,11 @@ jobs:
       - name: Compile Python sources
         run: python -m compileall -q desktop_shell engines model-layer storage
 
-      - name: Run offline test suite
-        run: python -m pytest -q
+      - name: Run offline test suite with coverage floor (exit E7 gate)
+        run: |
+          python -m pytest -q -m "not live" \
+            --cov=engines --cov=model-layer --cov=storage --cov=desktop_shell \
+            --cov-config=.coveragerc --cov-report=term-missing --cov-fail-under=90
 
       - name: Generate Flake8 report (advisory)
         continue-on-error: true
