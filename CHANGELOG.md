@@ -31,3 +31,28 @@ follows a simple chronological format (newest first).
   `ValueError`.
 - `requirements.txt`: dropped the `kokoro==not-implemented` placeholder
   comment; Piper is the sole TTS dependency.
+
+## [1.0.0] - 2026-11-10
+
+First tagged release anchor. Establishes the version single-source-of-truth
+(`desktop_shell/__init__.py::__version__ = "1.0.0"`) so the git tag `v1.0.0`,
+this entry, and the code constant agree.
+
+### Packaging & release
+- Windows desktop build via PyInstaller 6.22.2 (Python 3.10 baseline),
+  Authenticode signing (optional; unsigned builds are allowed and flagged),
+  SHA-256 build manifest, and a human-approved (`environment: release`)
+  GitHub Release workflow.
+- CI: `windows-build.yml` validates the build on every `main` push touching
+  `desktop_shell/**`; `release.yml` is manually dispatched and gated.
+
+### Quality
+- Offline suite (live tests deselected): 1051 passed at the time of tagging.
+- 90% coverage floor enforced locally via `run_checks.sh` (added to CI in the
+  shipment-readiness pass).
+
+### Security hygiene
+- `secrets/`, `models/`, `.env`, `*.secrets` are git-ignored and excluded from
+  the bundle by `desktop_shell/check_deployment_policy.py`.
+- Gitleaks config (`.gitleaks.toml`) and Dependabot/CodeQL added post-tag in the
+  shipment-readiness pass.
