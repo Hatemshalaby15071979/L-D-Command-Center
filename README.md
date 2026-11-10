@@ -2,7 +2,7 @@
 
 # L&D Command Center
 
-[![CI](https://github.com/Hatemshalaby15071979/L-D-Command-Center/actions/workflows/Quality/badge.svg)](https://github.com/Hatemshalaby15071979/L-D-Command-Center/actions)
+[![CI](https://github.com/Hatemshalaby15071979/L-D-Command-Center/actions/workflows/pylint.yml/badge.svg)](https://github.com/Hatemshalaby15071979/L-D-Command-Center/actions)
 ![licence](https://img.shields.io/badge/licence-MIT-blue)
 ![python](https://img.shields.io/badge/python-3.10%2B-3776ab)
 ![status](https://img.shields.io/badge/status-1.0.0%20released-brightgreen)
