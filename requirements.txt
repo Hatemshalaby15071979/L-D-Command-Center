@@ -34,7 +34,7 @@ faster-whisper==1.2.1     # offline speech-to-text (ctranslate2 int8)
 # numpy ships via faster-whisper
 
 # --- test toolchain ---
-pytest==9.1.1            # runner; suite: python -m pytest -m "not live"
+pytest==9.2.0            # runner; suite: python -m pytest -m "not live"
 pytest-cov==7.0.0       # coverage gate used by run_checks.sh
 reportlab==5.0.1         # test-only: generates sample PDFs for parser tests
 
