@@ -36,7 +36,7 @@ faster-whisper==1.2.1     # offline speech-to-text (ctranslate2 int8)
 # --- test toolchain ---
 pytest==9.1.1            # runner; suite: python -m pytest -m "not live"
 pytest-cov==7.0.0       # coverage gate used by run_checks.sh
-reportlab==5.0.1         # test-only: generates sample PDFs for parser tests
+reportlab==5.1.0         # test-only: generates sample PDFs for parser tests
 
 # --- optional audio backends (not required for the mocked suite) ---
 piper-tts==1.8.0         # sole implemented TTS backend (pulls onnxruntime); required for real narration/audiobook/podcast audio
