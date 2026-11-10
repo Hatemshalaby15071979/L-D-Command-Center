@@ -15,51 +15,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python (build baseline 3.10)
-        uses: actions/setup-python@v5
+      - name: Build, sign, manifest, smoke (shared)
+        uses: ./.github/actions/build-windows
         with:
-          python-version: "3.10"
-          cache: pip
-          cache-dependency-path: requirements.txt
-
-      - name: Install project dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt
-
-      - name: Install PyInstaller (pinned to local baseline)
-        run: python -m pip install pyinstaller==6.22.2
-
-      - name: Offline suite gate
-        run: python -m pytest -q
-
-      - name: Secrets/artifacts policy gate
-        run: python desktop_shell\check_deployment_policy.py
-
-      - name: PyInstaller build (windowed)
-        run: python -m PyInstaller desktop_shell\ldcc.spec --noconfirm --distpath dist --workpath build\release_work
-
-      # Must run BEFORE the manifest: signing rewrites the PE, so a hash
-      # computed earlier would not match the shipped binary.
-      - name: Sign executable
-        shell: pwsh
-        env:
-          LDCC_SIGN_PFX_BASE64: ${{ secrets.LDCC_SIGN_PFX_BASE64 }}
-          LDCC_SIGN_PFX_PASSWORD: ${{ secrets.LDCC_SIGN_PFX_PASSWORD }}
-        run: |
-          & ./desktop_shell/sign_build.ps1 -ExePath dist/ldcc.exe
-          $code = $LASTEXITCODE
-          if ($code -eq 3) {
-            Write-Host "::warning::No signing certificate configured - publishing an UNSIGNED release."
-            exit 0
-          }
-          exit $code
-
-      - name: Write build manifest
-        run: python desktop_shell\write_build_manifest.py dist\ldcc.exe
-
-      - name: Windowed-launch smoke gate
-        run: powershell -NoProfile -ExecutionPolicy Bypass -File desktop_shell\verify_build.ps1 -ExePath dist\ldcc.exe
+          sign_pfx_base64: ${{ secrets.LDCC_SIGN_PFX_BASE64 }}
+          sign_pfx_password: ${{ secrets.LDCC_SIGN_PFX_PASSWORD }}
 
       - name: Read signing status
         id: sign

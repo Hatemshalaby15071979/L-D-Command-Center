@@ -1,0 +1,29 @@
+name: Secret scan
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  gitleaks:
+    name: Gitleaks (history + working tree)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Full history so the scan covers every committed secret, not just HEAD.
+          fetch-depth: 0
+
+      - name: Run gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          # gitleaks-action@v2 requires GITHUB_TOKEN to scan pull requests
+          # (recent breaking change). The automatic token is sufficient.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Use the project's narrowly-allowlisted config (.gitleaks.toml).
+          GITLEAKS_CONFIG: .gitleaks.toml
+          GITLEAKS_ENABLE_UPLOAD_ARTIFACT: "false"

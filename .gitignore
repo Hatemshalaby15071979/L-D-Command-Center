@@ -66,3 +66,11 @@ models/
 
 # Local agent scratch — never published
 .workbuddy-ai/
+
+# Generated agent meta/scratch logs (auto-produced, not product docs).
+# Kept out of the public tree; re-add explicitly if a specific one should ship.
+AGENT_LOG.md
+FILE_MANIFEST.md
+TASKS.md
+MASTER_STORY.md
+BOOT_ROOT.md

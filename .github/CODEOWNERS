@@ -1,0 +1,11 @@
+# CODEOWNERS — review defaults for L&D Command Center
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+*       @Hatemshalaby15071979
+
+# Release / signing pipeline — owner must review any change to the build or gate.
+.github/workflows/release.yml          @Hatemshalaby15071979
+.github/workflows/windows-build.yml    @Hatemshalaby15071979
+desktop_shell/ldcc.spec                @Hatemshalaby15071979
+desktop_shell/sign_build.ps1           @Hatemshalaby15071979
+desktop_shell/check_deployment_policy.py  @Hatemshalaby15071979
