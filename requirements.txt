@@ -15,7 +15,7 @@
 httpx==0.28.1            # model-layer LM Studio HTTP client
 
 # --- exports ---
-fpdf2==2.8.8             # Journey/Resume PDF export
+fpdf2==2.9.0             # Journey/Resume PDF export
 python-docx==1.2.0       # Resume DOCX export
 python-pptx==1.0.2       # Journey PPTX export (P4.3)
 openpyxl==3.1.5          # Journey XLSX export (P4.3)
