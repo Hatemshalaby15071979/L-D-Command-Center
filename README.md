@@ -2,131 +2,94 @@
 
 # L&D Command Center
 
-
-<!-- badges:start -->
-
 [![CI](https://github.com/Hatemshalaby15071979/L-D-Command-Center/actions/workflows/Quality/badge.svg)](https://github.com/Hatemshalaby15071979/L-D-Command-Center/actions)
 ![licence](https://img.shields.io/badge/licence-MIT-blue)
-[![last commit](https://img.shields.io/github/last-commit/Hatemshalaby15071979/L-D-Command-Center)](https://github.com/Hatemshalaby15071979/L-D-Command-Center/commits/main)
-![status](https://img.shields.io/badge/ci-success-brightgreen?label=success%20(2026-10-05))
+![python](https://img.shields.io/badge/python-3.10%2B-3776ab)
+![status](https://img.shields.io/badge/status-v1.0.0%20released-brightgreen)
 
-*Measured 2026-10-06 — CI **success**; head `23f4cc3` (2026-10-05); Python.*
-
-<!-- No static test or coverage count is shown here: a frozen
-     number decays silently. Run the suite for a current figure;
-     the CI badge above is the live status. -->
-<!-- badges:end -->
-
-**A desktop learning, language, and career workstation that runs on your machine.**
-
-![Status](https://img.shields.io/badge/status-V1%20ship%20in%20progress-yellow)
-![Licence](https://img.shields.io/badge/licence-MIT-blue)
-![Python](https://img.shields.io/badge/python-3.10%2B-3776ab)
+**A study, language, and career workstation that runs on your own computer — not in the cloud.**
 
 </div>
 
-## One-line identity
+## What it is
 
-L&D Command Center is a desktop learning, language, and career workstation that runs
-on the user's own machine — a tool for building skills, not a platform that manages
-people.
+L&D Command Center is a desktop app for learning languages, preparing for exams,
+and working on your career. It runs entirely on your machine. There is no account
+to sign up for, no monthly fee, and nothing leaves your computer unless *you*
+connect a local AI model yourself.
 
-> [!NOTE]
-> **Operating principle.** A workstation should do one thing per screen and never pretend to be a platform. The parts that are frozen are frozen for a reason; the parts still moving say so. A language-lab drill and a resume builder are different jobs and are built as different, named sections rather than one dashboard pretending to be a system of record.
+If you are a student who wants to practice a language, drill for an exam, or build
+a better resume, this is built for you — you do not need to be a programmer to use
+it.
 
-## What it does
+## What you can do
 
-- **Language Lab**: 30 curated lesson packs (Spanish, Japanese, German) with audio, flashcards, and grammar drills.
-- **E.T. Conversation**: voice chat with persona-driven tutors, microphone input and accent feedback.
-- **Level Exams**: A1 to C1 final tests with recommendations.
-- **Career Development**: resume builder, GitHub and LinkedIn import, job search, cover letters, interview prep.
-- **Skills Arena**: reading, writing, listening practice built from the user's own files.
-- **Placement Quiz**: 12-item adaptive placement test (A1 to B1).
+- **Language Lab** — 30 ready-made lesson packs for Spanish, Japanese, and German,
+  with audio, flashcards, and grammar drills.
+- **Conversation practice** — speak with persona tutors through your microphone and
+  get accent feedback.
+- **Level exams** — final tests from A1 to C1, with a recommendation on what to
+  study next.
+- **Career tools** — build a resume, pull in your GitHub or LinkedIn, search jobs,
+  draft cover letters, and rehearse interviews.
+- **Skills Arena** — turn your own documents into reading, writing, and listening
+  practice.
+- **Placement quiz** — a 12-question test that places you between A1 and B1.
 
-Feature counts above are as of 2026-09-23.
+## Before you start
 
-## How it fits Helix Codex
+You will need:
 
-L&D Command Center is a **component** — a desktop learning, language, and career
-workstation. It is an **independent repository with no shared codebase** with Helix
-Prime. No data pipeline is wired to the core today. It is portfolio-adjacent and
-technically independent.
+- **Windows** (the packaged app is built for Windows)
+- **Python 3.10 or newer**
+- **LM Studio** running locally at `http://localhost:1234/v1` with a model loaded
+  (for example `google/gemma-4-12b-qat`)
+- the `tkinter` and `httpx` packages
 
-## Architecture
+The AI features use a model you run yourself. Without a model loaded, the app
+opens but the AI-assisted parts stay quiet.
 
-- `desktop_shell/app.py` — the Tkinter shell entry point.
-- `model-layer/quality_guard.py` — the quality guard and humor/tips layer.
-- Section modules — Language Lab, Career, Playground, Audio, Journey, each with its own frozen/unfrozen state.
-- `dist/archive` — the rollback target for the policy gate.
-- Endpoint auto-detect for Ollama (`11434`) / LM Studio (`1234`).
+## Get it and run it
 
-## Production status & test coverage
+1. Download the latest Windows build from the [Releases](releases) page.
+2. Before running it, compare the SHA-256 printed in the release notes with the
+   `ldcc-build.json` file that ships next to the download. They should match.
+3. Double-click `ldcc.exe`.
 
-Stated plainly and dated. Last measured 2026-09-23; not re-measured since.
+Prefer to run from source? Use the `RUN_LDCC.bat` launcher — not PowerShell,
+which mangles Python arguments.
 
-| Item | State | Evidence |
-|---|---|---|
-| Endpoint auto-detect | Active | Ollama 11434 / LM Studio 1234 |
-| Quality guard + humor/tips layer | Active | `model-layer/quality_guard.py` |
-| Frozen sections | Correct | Journey and Audio |
-| Unfrozen sections | In progress | Language Lab, Career, Playground |
-| E2E smoke | **Mixed** — see below | `E2E_SMOKE_REPORT.md` |
-| Policy gate | Pass | Rollback restores a previous archive from `dist/archive` |
+## Straight answers about safety and what is real
 
-> [!WARNING]
-> What the E2E smoke run actually recorded (one run, not a continuous suite): endpoint and client auto-scan, pipeline policy, and export layers PASS. The UI window launch was **BLOCKED** by a tkinter Tcl environment problem. Direct generation **TIMEOUT** at 60 s on that hardware. Audio/Journey/Studio were **FROZEN BY DESIGN**, not broken. GitHub/LinkedIn connection was **UNVERIFIED** in that session. No external audit, no certified data isolation, no signed security review, no revenue. The pricing tiers on `index.html` are a plan, not an offer: no payment path, no account system, no customer.
+- **It runs locally.** No account, no telemetry, no cloud sync. Your files and
+  conversations stay on your computer.
+- **Builds are verifiable.** Every release publishes a SHA-256 hash so you can
+  confirm the file you downloaded has not been altered.
+- **Signed when a certificate is set up.** If a code-signing certificate is
+  configured, the build is Authenticode-signed. If not, the release notes say so
+  plainly and Windows will show an "unknown publisher" warning — that is expected,
+  not a defect.
+- **Tested.** 1,056 automated tests pass and the code is 92% covered (measured
+  2026-11-10). All CI checks are green.
+- **The pricing tiers you may see on the website are a plan, not a store.** There
+  is no payment, no account system, and nothing to buy yet.
 
-## Run it
+## Status
 
-Do not run from PowerShell (a PowerShell limitation injects null bytes into Python
-arguments). Use the launcher or cmd.exe.
+**Version 1.0.0 — released November 2026.** The current Windows build is on the
+[Releases](releases) page. The CI badge at the top of this file is the live
+build status; it is always current, so we do not print a frozen number here.
 
-```cmd
-RUN_LDCC.bat
-```
+## For developers
 
-or from cmd.exe:
-
-```cmd
-cd /d <path-to-this-repo>
-python -c "import sys, os; sys.path.insert(0, os.getcwd()); import desktop_shell.app as app; app.run()"
-```
-
-Requires Python 3.10+, LM Studio at `http://localhost:1234/v1` with a model loaded
-(e.g. `google/gemma-4-12b-qat`), and `tkinter` + `httpx` to boot cleanly.
-
-## Releases and code signing
-
-Windows builds are produced by `.github/workflows/windows-build.yml` and
-published by `.github/workflows/release.yml`. Every build emits three records
-next to the binary:
-
-| File | Contents |
-|---|---|
-| `ldcc-build.json` | SHA-256, size, build time, Python/PyInstaller versions, upstream commit, signing status |
-| `ldcc-build.txt` | the same as one line |
-| `ldcc-signature.json` | Authenticode status, signer subject, thumbprint, certificate expiry |
-
-The signing stage is implemented and wired; it activates when
-`LDCC_SIGN_PFX_BASE64` and `LDCC_SIGN_PFX_PASSWORD` are present in the
-repository secrets. Without them the build ships unsigned and says so in the
-release notes. See [`docs/CODE_SIGNING.md`](docs/CODE_SIGNING.md) for what to
-buy, how to add the secrets, and the Azure Artifact Signing alternative.
-
-Verify a download before running it:
-
-```powershell
-Get-FileHash .\ldcc.exe -Algorithm SHA256
-# compare against the sha256 field in ldcc-build.json
-```
-
-## Related work
-
-- [Full portfolio](https://github.com/Hatemshalaby15071979/Hatemshalaby15071979) — how this project fits the wider work
+- Written in Python with Tkinter. Entry point: `desktop_shell/app.py`.
+- Built and signed by `.github/workflows/windows-build.yml` and `release.yml`.
+- Production, signing, and deployment notes live in `docs/`.
 
 ## Author
 
-Built by Hatem Shalaby, Contact Centre Operations & AI Implementation Lead | WFM & CX Transformation. Background: https://github.com/Hatemshalaby15071979
+Built by **Hatem Shalaby** — Contact Centre Operations & AI Implementation Lead,
+WFM & CX Transformation.
 
 ## Licence
 

@@ -39,5 +39,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SIGN_NOTE: ${{ steps.sign.outputs.note }}
         run: |
+          # Date-stamped tag is the build id; the TITLE names the product and
+          # the released version so the release is recognisable, not "ldcc vDATE".
           $tag = "v$((Get-Date -Format 'yyyyMMdd-HHmmss'))"
-          gh release create $tag "dist/ldcc.exe" "dist/ldcc-build.json" "dist/ldcc-build.txt" "dist/ldcc-signature.json" --title "ldcc $tag" --notes "$env:SIGN_NOTE`n`nVerify sha256 against dist/ldcc-build.json in the release assets."
+          $version = "1.0.0"  # keep in sync with desktop_shell/__init__.py::__version__
+          gh release create $tag "dist/ldcc.exe" "dist/ldcc-build.json" "dist/ldcc-build.txt" "dist/ldcc-signature.json" --title "L&D Command Center v$version — build $tag" --notes "$env:SIGN_NOTE`n`nVerify sha256 against dist/ldcc-build.json in the release assets."
