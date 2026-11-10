@@ -13,7 +13,7 @@ jobs:
     # configured in repository Settings -> Environments -> release.
     environment: release
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Build, sign, manifest, smoke (shared)
         uses: ./.github/actions/build-windows
