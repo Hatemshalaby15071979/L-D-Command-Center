@@ -5,7 +5,7 @@
 [![CI](https://github.com/Hatemshalaby15071979/L-D-Command-Center/actions/workflows/Quality/badge.svg)](https://github.com/Hatemshalaby15071979/L-D-Command-Center/actions)
 ![licence](https://img.shields.io/badge/licence-MIT-blue)
 ![python](https://img.shields.io/badge/python-3.10%2B-3776ab)
-![status](https://img.shields.io/badge/status-v1.0.0%20released-brightgreen)
+![status](https://img.shields.io/badge/status-1.0.0%20released-brightgreen)
 
 **A study, language, and career workstation that runs on your own computer — not in the cloud.**
 
@@ -76,9 +76,9 @@ which mangles Python arguments.
 
 ## Status
 
-**Version 1.0.0 — released November 2026.** The current Windows build is on the
-[Releases](releases) page. The CI badge at the top of this file is the live
-build status; it is always current, so we do not print a frozen number here.
+<!-- docs-sync:start -->
+**Version 1.0.0 — released 10 November 2026.** The current Windows build is on the [Releases](releases) page. The CI badge at the top of this file is the live build status; it is always current, so we do not print a frozen number here.
+<!-- docs-sync:end -->
 
 ## For developers
 
