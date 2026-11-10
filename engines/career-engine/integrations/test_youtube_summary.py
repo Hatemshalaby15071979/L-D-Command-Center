@@ -11,6 +11,7 @@ import json
 import sys
 from pathlib import Path
 from unittest.mock import MagicMock, patch
+from urllib.parse import urlparse
 
 import pytest
 
@@ -399,10 +400,15 @@ class TestSummarizeYoutubeVideos:
             VideoSummary(video=videos[1], summary="Summary 2", key_takeaways=["T2"]),
         ]
 
-        # Verify invariant: all summaries have URLs
+        # Verify invariant: all summaries have traceable YouTube URLs.
+        # Parse the URL and check the host (substring 'in' checks are
+        # bypassable, e.g. 'youtube.com.evil.example').
         for summary in summaries:
             assert summary.video.url is not None
-            assert "youtube.com" in summary.video.url
+            netloc = urlparse(summary.video.url).netloc.lower()
+            assert netloc in ("www.youtube.com", "youtube.com") or netloc.endswith(
+                ".youtube.com"
+            )
             assert len(summary.video.url) > 0
 
 
@@ -430,7 +436,8 @@ def test_manual_verification():
 
     3. Verify URL tracing:
        for s in summaries:
-           assert 'youtube.com' in s.video.url
+           from urllib.parse import urlparse
+           assert urlparse(s.video.url).netloc.lower().endswith('youtube.com')
        print('All summaries have traceable URLs ✓')
     """
     # Placeholder for documentation

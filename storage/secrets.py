@@ -66,18 +66,18 @@ def load_secret(
     if secrets_path is not None:
         value = parse_secrets_file(Path(secrets_path)).get(name)
         if value:
-            logger.info("Secret %s resolved from %s", name, Path(secrets_path).name)
+            logger.info("Secret %s resolved", name)
             return value
         return None
 
     directory = Path(secrets_dir) if secrets_dir else DEFAULT_SECRETS_DIR
     if not directory.exists():
-        logger.debug("Secrets dir not found: %s", directory)
+        logger.debug("Secrets directory not found")
         return None
 
     for file in sorted(directory.glob("*.secrets")):
         value = parse_secrets_file(file).get(name)
         if value:
-            logger.info("Secret %s resolved from %s", name, file.name)
+            logger.info("Secret %s resolved", name)
             return value
     return None
