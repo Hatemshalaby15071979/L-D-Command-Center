@@ -1,0 +1,13 @@
+{
+  "name": "L&D Command Center",
+  "repo": "Hatemshalaby15071979/L-D-Command-Center",
+  "status_template": "**Version @DOCS_SYNC_VERSION@ — released @DOCS_SYNC_DATE@.** The current Windows build is on the [Releases](releases) page. The CI badge at the top of this file is the live build status; it is always current, so we do not print a frozen number here.",
+  "status_template_html": "<p class=\"status\"><strong>Released @DOCS_SYNC_DATE@.</strong> Version @DOCS_SYNC_VERSION@ is out: @DOCS_SYNC_TESTS@ automated tests pass, the code is @DOCS_SYNC_COVERAGE@% covered, and @DOCS_SYNC_CI@. Each Windows build is published with a SHA-256 hash so you can verify the download, and it is Authenticode-signed when a code-signing certificate is configured. The pricing tiers below are a plan, not a store &mdash; there is no payment yet.</p>",
+  "facts": {
+    "version": "1.0.0",
+    "release_date": "10 November 2026",
+    "tests_passed": 1056,
+    "coverage": 92,
+    "ci_label": "all CI checks are green"
+  }
+}
