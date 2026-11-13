@@ -16,8 +16,8 @@ useDefault = true
 # this config must not do. Matching the exact placeholder string keeps a new,
 # real-looking key in that same file reportable (proven by a probe scan).
 [[allowlists]]
-description = "Fake API-key placeholder used by the YouTube secrets-loader test"
-regexes = ['''FAKE_API_KEY_FOR_TESTS_000000''']
+description = "Fake API-key placeholders used by the YouTube secrets-loader test (current FAKE_API_KEY_FOR_TESTS_000000 and historical AIzaSyTestKey123 / AIzaSySecretKey123 fixtures)"
+regexes = ['''FAKE_API_KEY_FOR_TESTS_000000''', '''AIzaSyTestKey123''', '''AIzaSySecretKey123''']
 
 # 2) Historical fixture blobs.
 # Reason: these three commits are the ones that first introduced the old fake
@@ -27,7 +27,6 @@ regexes = ['''FAKE_API_KEY_FOR_TESTS_000000''']
 [[allowlists]]
 description = "Historical fake fixtures in the YouTube secrets-loader test"
 commits = [
-  "09681c358e2d1098219afde1f3ccc1198d7595cd",
-  "bc2ec6c6198f3ef09941a3dfaf076829dc72d73c",
-  "49af093ad8a51022334ebfd8f3199640a8e226c1",
+  "4d688b7e2323445baf489b3a2398fbc82862f558",
+  "d35f8c911b2538d408fd720040d2968072d4d5ca",
 ]
