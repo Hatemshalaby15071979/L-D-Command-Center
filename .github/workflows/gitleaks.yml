@@ -26,4 +26,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Use the project's narrowly-allowlisted config (.gitleaks.toml).
           GITLEAKS_CONFIG: .gitleaks.toml
+          # Blocking: fail the run when a secret is detected (was report-only).
+          GITLEAKS_ARGS: --exit-code 1
           GITLEAKS_ENABLE_UPLOAD_ARTIFACT: "false"
