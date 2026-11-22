@@ -14,7 +14,7 @@
 </div>
 
 <p float="left">
-  <strong>L&D Command Center 1.0.0<br></strong><br>
+  <strong>L&D Command Center 1.0.0</strong><br>
   <span style="font-size:0.9em;color:#93aaa0">by Helix Solutions</span>
 </p>
 
