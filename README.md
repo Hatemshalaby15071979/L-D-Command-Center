@@ -13,6 +13,11 @@
 
 </div>
 
+<p float="left">
+  <strong>L&D Command Center 1.0.0<br></strong><br>
+  <span style="font-size:0.9em;color:#93aaa0">by Helix Solutions</span>
+</p>
+
 ## What it is
 
 L&D Command Center is a desktop app for learning languages, preparing for exams,
