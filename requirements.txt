@@ -21,7 +21,7 @@ python-pptx==1.0.2       # Journey PPTX export (P4.3)
 openpyxl==3.1.5          # Journey XLSX export (P4.3)
 
 # --- career-engine parsing & integrations ---
-pdfplumber==0.11.10      # resume upload (PDF text extraction)
+pdfplumber==0.11.11      # resume upload (PDF text extraction)
 requests==2.34.2         # GitHub/LinkedIn/YouTube HTTP integrations
                          # bumped 2026-09-25 from 2.32.5: PYSEC-2026-2275, fixed in 2.33.0
 
