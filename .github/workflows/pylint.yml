@@ -56,3 +56,19 @@ jobs:
         with:
           name: pylint-report
           path: pylint-report.txt
+
+  governance:
+    name: Root-document gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Root-document gate (GOVERNANCE.md section 2)
+        run: |
+          python3 scripts/check_root_docs.py
+          python3 scripts/check_root_docs.py --self-test

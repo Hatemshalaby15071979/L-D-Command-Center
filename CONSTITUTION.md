@@ -85,4 +85,4 @@ This file can change — but only via an explicit, logged decision by the
 project owner. No agent edits this file to make its own task easier.
 
 ---
-UPDATE 2026-09-23 — Endpoint auto-detect (ollama/LM Studio) applied; quality guard (non-robotic + humor/tips) active; e2e smoke report: E2E_SMOKE_REPORT.md. Release judgment: small boring change shipped; rollback via previous archive in build/.
+UPDATE 2026-09-23 — Endpoint auto-detect (ollama/LM Studio) applied; quality guard (non-robotic + humor/tips) active; e2e smoke report: docs/archive/E2E_SMOKE_REPORT.md. Release judgment: small boring change shipped; rollback via previous archive in build/.

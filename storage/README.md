@@ -9,4 +9,4 @@ The storage engine provides local data persistence for the entire system. It man
 - `secrets.py` — the single KEY=VALUE secrets parser/lookup used by all third-party integrations.
 
 ---
-UPDATE 2026-09-23 — Endpoint auto-detect (ollama/LM Studio) applied; quality guard (non-robotic + humor/tips) active; e2e smoke report: E2E_SMOKE_REPORT.md. Release judgment: small boring change shipped; rollback via previous archive in build/.
+UPDATE 2026-09-23 — Endpoint auto-detect (ollama/LM Studio) applied; quality guard (non-robotic + humor/tips) active; e2e smoke report: docs/archive/E2E_SMOKE_REPORT.md. Release judgment: small boring change shipped; rollback via previous archive in build/.

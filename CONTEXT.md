@@ -209,4 +209,4 @@ applies). Source of truth for the vision itself is `MASTER_STORY.md`.
   voice-model weights; standalone voice ships as an opt-in download.
 
 ---
-UPDATE 2026-09-24 — Podcast/audiobook length compliance: word-budget validation + prompt budget + stretch re-render in controller AND immersion path (Segment/Length Compliance above). Live e2e: granite4.2 via ollama generated a 1-min podcast at 143s actual (LENGTH_OK). Endpoint auto-detect (ollama/LM Studio) applied; quality guard (non-robotic + humor/tips) active; e2e smoke report: E2E_SMOKE_REPORT.md. Release judgment: small boring change shipped; rollback via previous archive in build/.
+UPDATE 2026-09-24 — Podcast/audiobook length compliance: word-budget validation + prompt budget + stretch re-render in controller AND immersion path (Segment/Length Compliance above). Live e2e: granite4.2 via ollama generated a 1-min podcast at 143s actual (LENGTH_OK). Endpoint auto-detect (ollama/LM Studio) applied; quality guard (non-robotic + humor/tips) active; e2e smoke report: docs/archive/E2E_SMOKE_REPORT.md. Release judgment: small boring change shipped; rollback via previous archive in build/.
