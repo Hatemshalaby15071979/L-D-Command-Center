@@ -60,3 +60,21 @@ manifest files are local-only by `.gitignore` (commit 909d147); that is recorded
 reversed.
 
 Left undone: Nothing at start.
+
+## [2026-11-27 05:52 EET] — sami (OpenMausBot)
+
+Task: Land the governance standard, verify the gate, and sign out.
+
+Touched: `GOVERNANCE.md` (added; the `AGENT_LOG.md` row was removed from the section 2
+table and the other references now point at this file's section 3), `SECURITY.md` (added),
+`scripts/check_root_docs.py` (added, byte-identical to the portfolio copy),
+`.github/workflows/pylint.yml` (new required `governance` job), the three archived reports
+and every README/doc that linked them, plus link fixes in `CONSTITUTION.md` and `CONTEXT.md`.
+
+Why: The gate first failed because `GOVERNANCE.md` still listed the gitignored
+`AGENT_LOG.md` as a required root document. Rather than restoring a file that commit
+909d147 deliberately untracked, the table now names only the tracked set and this section is
+the ledger of record.
+
+Left undone: Nothing. `python3 scripts/check_root_docs.py` passes (8 table rows, 8 allowed
+root documents); the offline suite reports 1056 passed, 7 deselected.
